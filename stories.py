@@ -30,6 +30,37 @@ class Story:
             year = int(date[2])
             self.date = datetime.date(year, month, day)
 
+    def csv(self):
+        list =[]
+        list.append(self.header)
+        list.append(self.url)
+        list.append(str(self.date.day)+"/"+str(self.date.month)+"/"+str(self.date.year))
+        list.append(self.text)
+        return ",".join(list)
+
+    def xml(self):
+        xml = ""
+        xml = "<item>" + "\n"
+        xml += "\t" + "<id>" + str(self.id) + "</id>" + "\n"
+        xml += "\t" + "<title>" + "<![CDATA[" + self.header + "]]>" + "</title>" + "\n"
+        xml += "\t" + "<link>" + self.url + "</link>" + "\n"
+        xml += "\t" + "<pubDate>" + str(self.date.day)+"/"+str(self.date.month)+"/"+str(self.date.year) + "</pubDate>" + "\n"
+        xml += "\t" + "<description>" + "<![CDATA[" + self.text + "]]>" + "</description>" + "\n"
+        xml += "</item>" + "\n"
+        return xml
+
+    @classmethod
+    def RSS(cls):
+        xml = """<?xml version="1.0" encoding="UTF-8" ?>""" + "\n"
+        xml += """<rss version="2.0">""" + "\n"
+
+        xml += "<channel>" + "\n"
+        for each in cls._instances:
+            xml += each.xml()
+        xml += "</channel>" + "\n"
+        xml += "</rss>"
+        return xml
+
     def show(self):
         print "story id: ", self.id
         print "Header:", self.header

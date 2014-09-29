@@ -4,10 +4,9 @@ class exportstories:
     def __init__(self):
         pass
 
-stories.Story("a1","u1","11/12/2014","bla1")
+stories.Story("story 1 header","http://blabla.bla","11/12/2014","text 1")
 print stories.Story._instances
-stories.Story("a2","u2","10/11/2014","bla1")
+stories.Story("story 2 header","http://blabla.bla","10/11/2014","text 2")
 print stories.Story._instances
 
-for each in stories.Story:
-    each.show()
+print stories.Story.RSS()
