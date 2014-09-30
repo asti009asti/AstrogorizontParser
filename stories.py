@@ -10,12 +10,12 @@ class Story:
     _instances = []
     _id = 1
 
-    def __init__(self, header=None, url=None, date=None, text=None):
+    def __init__(self, header=None, url=None, date=None, description=None):
         """dateformat = dd/mm/yy"""
         self.header = header
         self.url = url
         self.setdate(date)
-        self.text = text
+        self.description = description
         Story._instances.append(self)
         self.id = Story._id
         Story._id += 1
@@ -35,7 +35,7 @@ class Story:
         list.append(self.header)
         list.append(self.url)
         list.append(str(self.date.day)+"/"+str(self.date.month)+"/"+str(self.date.year))
-        list.append(self.text)
+        list.append(self.description)
         return ",".join(list)
 
     def xml(self):
@@ -45,7 +45,7 @@ class Story:
         xml += "\t" + "<title>" + "<![CDATA[" + self.header + "]]>" + "</title>" + "\n"
         xml += "\t" + "<link>" + self.url + "</link>" + "\n"
         xml += "\t" + "<pubDate>" + str(self.date.day)+"/"+str(self.date.month)+"/"+str(self.date.year) + "</pubDate>" + "\n"
-        xml += "\t" + "<description>" + "<![CDATA[" + self.text + "]]>" + "</description>" + "\n"
+        xml += "\t" + "<description>" + "<![CDATA[" + self.description + "]]>" + "</description>" + "\n"
         xml += "</item>" + "\n"
         return xml
 
@@ -66,7 +66,7 @@ class Story:
         print "Header:", self.header
         print "Date: {}/{}/{}".format(self.date.day, self.date.month, self.date.year)
         print "URL:", self.url
-        print "Text:", self.text
+        print "Text:", self.description
 
     def __del__(self):
         pass
