@@ -5,16 +5,26 @@ from selenium.webdriver.chrome.options import Options
 import selenium.common.exceptions as Exceptions
 import time
 
-class webpage:
+class Webpage:
 
     def __init__(self, url):
+        self.driver = None
         self.url = url
+
+    def launchchrome(self):
         self.chromeoptions = Options()
         self.chromeoptions.add_argument('--disable-extensions')
         self.chromeoptions.add_experimental_option("excludeSwitches", ["ignore-certificate-errors"])
         self.driver = webdriver.Chrome(chrome_options=self.chromeoptions)
-        self.driver.get(self.url)
         self.driver.maximize_window()
+
+
+    def open(self):
+        self.launchchrome()
+        self.driver.get(self.url)
+
+    def nextpage(self, element):
+        element.click()
 
     def wait_for_url_change(self, function_to_execute):
         url_before = self.driver.current_url
@@ -28,26 +38,41 @@ class webpage:
         else:
             return True
 
-    def navigate(self, control):
-        control.click()
-
     def scan(self, pattern):
         if "google" in self.url:
             self.scan_google(pattern)
         elif "astrogorizont" in self.url:
-            self.scan_astrogorizont()
+            self.scan_astrogorizont(pattern)
 
     def scan_google(self, pattern):
-        pass
+        print "Google!"
 
     def scan_astrogorizont(self, pattern):
-        pattern_array = pattern.split(",")
-        bytype = pattern_array[0]
+        print "AG!"
+        headers = wbpg.driver.find_elements_by_xpath(headers_xpath)
+        dates = wbpg.driver.find_elements_by_xpath(dates_xpath)
+        description = wbpg.driver.find_elements_by_xpath(description_xpath)
 
 
-        try:
-            WebDriverWait(self.driver, 10).until(EC.presence_of_all_elements_located((bytype, value)))
-            self.driver.find_elements(bytype, value)
-        except Exceptions.NoSuchElementException, e:
-            return False
-        return True
+        print headers
+        del headers[0]
+        print headers
+
+
+        for i, each in enumerate(headers):
+            print each.text
+
+        for each in dates:
+            tmp = (each.text.lstrip()).split(" ")
+            #tmp = each.text.split(" ")
+            print "/".join(tmp)
+
+
+        for each in description:
+            print each.text[:-10]
+
+        #for header, date, description in zip(headers, dates, description):
+        #    print header.text, date.text, description.text
+
+    def __del__(self):
+        self.driver.close()

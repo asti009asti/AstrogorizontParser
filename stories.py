@@ -68,5 +68,8 @@ class Story:
         print "URL:", self.url
         print "Text:", self.description
 
+    def search(self):
+        pass
+
     def __del__(self):
         pass

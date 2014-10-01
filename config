@@ -1,0 +1,4 @@
+AG_HEADERS_XPATH = "//table/tbody/tr/td/h1"
+AG_DATES_XPATH = "//td[@bgcolor='#474E63'][span[@class='datarticles']]"
+AG_DESCIPTION_XPATH = "//td[@colspan='2'][@valign='top']"
+AG_NEXTPAGE = ""
