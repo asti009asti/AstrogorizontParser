@@ -47,6 +47,9 @@ class Webpage:
     def scan_google(self, pattern):
         print "Google!"
 
+    def read_config(self,file):
+        pass
+
     def scan_astrogorizont(self, pattern):
         print "AG!"
         headers = wbpg.driver.find_elements_by_xpath(headers_xpath)
