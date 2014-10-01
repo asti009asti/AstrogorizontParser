@@ -74,5 +74,5 @@ class Webpage:
         #for header, date, description in zip(headers, dates, description):
         #    print header.text, date.text, description.text
 
-    def __del__(self):
+    def close(self):
         self.driver.close()
