@@ -1,5 +1,6 @@
 import stories
 import webpage
+import filelib
 from selenium import webdriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -10,7 +11,7 @@ import time
 webpg = webpage.Webpage("http://www.astrogorizont.com/content/ch-2")
 webpg.open()
 #wbpg.scan("blabla")
-
+file = filelib.ConfigFile.read_config("config")
 
 webpg.close()
 

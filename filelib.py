@@ -35,3 +35,21 @@ class File:
         if cls.check_file_exists(file):
             pass
 
+
+class ConfigFile(File):
+
+    @classmethod
+    def read_config(self, file):
+        if self.check_file_exists(file):
+            fullpath = self.get_project_folder()+file
+            fileref = open(fullpath, "r")
+            for line in fileref:
+                print line.split(" = ")[1]
+            fileref.close()
+
+
+
+class Reporting(File):
+
+    def export_results_to_file(self):
+        pass
