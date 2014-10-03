@@ -40,13 +40,7 @@ class ConfigFile(File):
 
     @classmethod
     def read_config(self, file):
-        if self.check_file_exists(file):
-            fullpath = self.get_project_folder()+file
-            fileref = open(fullpath, "r")
-            for line in fileref:
-                print line.split(" = ")[1]
-            fileref.close()
-
+        pass
 
 
 class Reporting(File):

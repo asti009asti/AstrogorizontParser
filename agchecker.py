@@ -8,10 +8,21 @@ from selenium.webdriver.chrome.options import Options
 import selenium.common.exceptions as Exceptions
 import time
 
-webpg = webpage.Webpage("http://www.astrogorizont.com/content/ch-2")
+webpg = webpage.AgWebPage("http://www.astrogorizont.com/content/ch-2")
+webpg.launch_chrome()
 webpg.open()
-#wbpg.scan("blabla")
-file = filelib.ConfigFile.read_config("config")
+
+#nextpages = self.driver.find_elements_by_xpath(config.AG_NEXTPAGE)
+#        for each in nextpages:
+
+for i in range(1, 4):
+    webpg.scan()
+    webpg.nextpage()
+
+stories.Story.showall()
+
+
+#file = filelib.ConfigFile.read_config("config.py")
 
 webpg.close()
 

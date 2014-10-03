@@ -10,10 +10,9 @@ class Story:
     _instances = []
     _id = 1
 
-    def __init__(self, header=None, url=None, date=None, description=None):
+    def __init__(self, header=None, date=None, description=None):
         """dateformat = dd/mm/yy"""
         self.header = header
-        self.url = url
         self.setdate(date)
         self.description = description
         Story._instances.append(self)
@@ -33,7 +32,6 @@ class Story:
     def csv(self):
         list =[]
         list.append(self.header)
-        list.append(self.url)
         list.append(str(self.date.day)+"/"+str(self.date.month)+"/"+str(self.date.year))
         list.append(self.description)
         return ",".join(list)
@@ -43,7 +41,7 @@ class Story:
         xml = "<item>" + "\n"
         xml += "\t" + "<id>" + str(self.id) + "</id>" + "\n"
         xml += "\t" + "<title>" + "<![CDATA[" + self.header + "]]>" + "</title>" + "\n"
-        xml += "\t" + "<link>" + self.url + "</link>" + "\n"
+        #xml += "\t" + "<link>" + self.url + "</link>" + "\n"
         xml += "\t" + "<pubDate>" + str(self.date.day)+"/"+str(self.date.month)+"/"+str(self.date.year) + "</pubDate>" + "\n"
         xml += "\t" + "<description>" + "<![CDATA[" + self.description + "]]>" + "</description>" + "\n"
         xml += "</item>" + "\n"
@@ -53,7 +51,6 @@ class Story:
     def RSS(cls):
         xml = """<?xml version="1.0" encoding="UTF-8" ?>""" + "\n"
         xml += """<rss version="2.0">""" + "\n"
-
         xml += "<channel>" + "\n"
         for each in cls._instances:
             xml += each.xml()
@@ -61,12 +58,19 @@ class Story:
         xml += "</rss>"
         return xml
 
+    @classmethod
+    def showall(cls):
+        if cls._instances == []:
+            print "No stories exist so far"
+        else:
+            [cls.show(each) for each in cls._instances]
+
     def show(self):
         print "story id: ", self.id
         print "Header:", self.header
         print "Date: {}/{}/{}".format(self.date.day, self.date.month, self.date.year)
-        print "URL:", self.url
-        print "Text:", self.description
+        #print "URL:", self.url
+        print "Description:", self.description
 
     def search(self):
         pass
