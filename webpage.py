@@ -1,6 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 import selenium.common.exceptions as Exceptions
 import time
@@ -118,5 +120,26 @@ class AgWebPage(Webpage):
 
 
 class GWebPage(Webpage):
+
+    def __init__(self, url):
+        Webpage.__init__(self, url)
+        self.domain = config.G_SEARCHDOMAIN
+        self.pages = config.G_SEARCHPAGES
+
+    def search(self, story_header):
+        searchbox = self.driver.find_element_by_id(config.G_SEARCH)
+        searchbox.click()
+        searchbox.clear()
+        searchbox.send_keys(story_header)
+        searchbox.send_keys(Keys.RETURN)
+
     def scan(self):
-        pass
+        domains = self.driver.find_elements_by_xpath(config.G_DOMAINS)
+        count = 0
+        for each in domains:
+            if self.domain in each.text:
+                count += 1
+        return count
+
+    def next_page(self):
+        self.driver.find_element_by_xpath(config.G_NEXTPAGE).click()

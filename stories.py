@@ -1,6 +1,7 @@
 import datetime
 import webpage
 
+
 class Iteration(type):
     def __iter__(cls):
         return iter(cls._instances)
@@ -78,7 +79,15 @@ class Story:
 
     def search(self):
         gwebpg = webpage.GWebPage("http://www.google.com")
+        gwebpg.launch_chrome()
+        gwebpg.open()
+        gwebpg.wait_for_url_change(lambda: gwebpg.search(self.header))
 
+        for page in range(gwebpg.pages):
+            self.search_occurences += gwebpg.scan()
+            if page != gwebpg.pages-1 and gwebpg.pages != 1:
+                # omit next page click for last page and if only one page is being inspected for each query
+                gwebpg.wait_for_url_change(lambda: gwebpg.next_page())
         gwebpg.close()
 
     def __del__(self):
