@@ -7,6 +7,7 @@ import time
 import config
 import stories
 import sys
+import datetime
 
 class Webpage:
 
@@ -42,9 +43,12 @@ class Webpage:
 
 class AgWebPage(Webpage):
 
-    def __init__(self, url):
+    def __init__(self, url, days):
         Webpage.__init__(self, url)
         self.currentpage = 1
+        self.page_switch_flag = 0
+        self.days = days
+        self.continue_scan = True
 
     def scan(self):
         headers = []
@@ -75,12 +79,22 @@ class AgWebPage(Webpage):
             sys.exit(1)
 
         for header, date, description in zip(headers, dates, description):
-            stories.Story(header.text, "/".join((date.text.lstrip()).split(" ")), description.text[:-10])
+            datetext = "/".join((date.text.lstrip()).split(" "))
+            if self.is_date_valid(datetext):
+                stories.Story(header.text, datetext, description.text[:-10])
+            else:
+                self.continue_scan = False
+                break
 
     def update_current_page(self):
         self.currentpage += 1
 
     def nextpage(self):
+        if self.currentpage == 11 and self.page_switch_flag == 0:
+            self.currentpage = 3
+            self.page_switch_flag = 1
+        elif self.page_switch_flag > 0 and self.currentpage == 13:
+            self.currentpage = 3
         nextpage_xpath = config.AG_NEXTPAGES[:-2]+ str(self.currentpage) + "]"
         for i in range(4):
             try:
@@ -91,6 +105,16 @@ class AgWebPage(Webpage):
         next_page_link.click()
         self.update_current_page()
 
+    def is_date_valid(self, param):
+        date = param.split("/")
+        day = int(date[0])
+        month = int(date[1])
+        year = int("20"+date[2])
+        storydate = datetime.date(year, month, day)
+        todaydate = datetime.date.today()
+        if (todaydate - storydate).days < self.days:
+            return True
+        return False
 
 
 class GWebPage(Webpage):

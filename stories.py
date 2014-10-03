@@ -26,7 +26,7 @@ class Story:
             date = date.split("/")
             day = int(date[0])
             month = int(date[1])
-            year = int(date[2])
+            year = int("20"+date[2])
             self.date = datetime.date(year, month, day)
 
     def csv(self):
