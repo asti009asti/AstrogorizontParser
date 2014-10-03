@@ -8,7 +8,7 @@ from selenium.webdriver.chrome.options import Options
 import selenium.common.exceptions as Exceptions
 import time
 
-webpg = webpage.AgWebPage("http://www.astrogorizont.com/content/ch-2", 60)
+webpg = webpage.AgWebPage("http://www.astrogorizont.com/content/ch-2", 30)
 webpg.launch_chrome()
 webpg.open()
 
@@ -16,6 +16,10 @@ while webpg.continue_scan:
     webpg.scan()
     webpg.nextpage()
 stories.Story.showall()
+
+for each in stories.Story:
+    each.search()
+
 
 webpg.close()
 

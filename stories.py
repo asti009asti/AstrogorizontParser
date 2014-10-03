@@ -1,4 +1,5 @@
 import datetime
+import webpage
 
 class Iteration(type):
     def __iter__(cls):
@@ -18,6 +19,7 @@ class Story:
         Story._instances.append(self)
         self.id = Story._id
         Story._id += 1
+        self.search_occurences = 0
 
     def setdate(self, date):
         if date == None:
@@ -34,6 +36,7 @@ class Story:
         list.append(self.header)
         list.append(str(self.date.day)+"/"+str(self.date.month)+"/"+str(self.date.year))
         list.append(self.description)
+        list.append(self.search_occurences)
         return ",".join(list)
 
     def xml(self):
@@ -71,9 +74,12 @@ class Story:
         print "Date: {}/{}/{}".format(self.date.day, self.date.month, self.date.year)
         #print "URL:", self.url
         print "Description:", self.description
+        print "Search occurences:", self.search_occurences
 
     def search(self):
-        pass
+        gwebpg = webpage.GWebPage("http://www.google.com")
+
+        gwebpg.close()
 
     def __del__(self):
         pass
