@@ -21,10 +21,10 @@ class Webpage:
         self.continue_scan = True
 
     def launch_chrome(self):
-        self.chromeoptions = Options()
-        self.chromeoptions.add_argument('--disable-extensions')
-        self.chromeoptions.add_experimental_option("excludeSwitches", ["ignore-certificate-errors"])
-        self.driver = webdriver.Chrome(chrome_options=self.chromeoptions)
+        self.chrome_options = Options()
+        self.chrome_options.add_argument('--disable-extensions')
+        self.chrome_options.add_experimental_option("excludeSwitches", ["ignore-certificate-errors"])
+        self.driver = webdriver.Chrome(chrome_options=self.chrome_options)
         self.driver.maximize_window()
 
     def open(self):
@@ -50,7 +50,7 @@ class AgWebPage(Webpage):
 
     def __init__(self, url, days):
         Webpage.__init__(self, url)
-        self.currentpage = 1
+        self.current_page = 1
         self.page_switch_flag = 0
         self.days = days
 
@@ -95,15 +95,15 @@ class AgWebPage(Webpage):
                 break
 
     def update_current_page(self):
-        self.currentpage += 1
+        self.current_page += 1
 
     def nextpage(self):
-        if self.currentpage == 11 and self.page_switch_flag == 0:
-            self.currentpage = 3
+        if self.current_page == 11 and self.page_switch_flag == 0:
+            self.current_page = 3
             self.page_switch_flag = 1
-        elif self.page_switch_flag > 0 and self.currentpage == 13:
-            self.currentpage = 3
-        nextpage_xpath = config.AG_NEXTPAGES[:-2] + str(self.currentpage) + "]"
+        elif self.page_switch_flag > 0 and self.current_page == 13:
+            self.current_page = 3
+        nextpage_xpath = config.AG_NEXTPAGES[:-2] + str(self.current_page) + "]"
         for attempt in range(config.MAX_ATTEMPTS_TO_FIND_ELEMENT):
             try:
                 next_page_link = self.driver.find_element_by_xpath(nextpage_xpath)
@@ -131,7 +131,9 @@ class GWebPage(Webpage):
         Webpage.__init__(self, url)
         self.domain = config.G_SEARCHDOMAIN
         self.pages = config.G_SEARCHPAGES
-        self.resultstats = ""
+
+        # a variable to store google's resultStats field text
+        self.result_stats = ""
 
     def scan(self):
         attempt = 0
@@ -139,32 +141,32 @@ class GWebPage(Webpage):
             try:
                 domains = self.driver.find_elements_by_xpath(config.G_DOMAINS)
                 count = 0
-                for each in domains:
-                    if self.domain in each.text:
+                for domain in domains:
+                    if self.domain in domain.text:
                         count += 1
                 return count
             except Exceptions.StaleElementReferenceException:
                 attempt += 1
 
     def enter_story_in_searchbox(self, header):
-        searchbox = self.driver.find_element_by_id(config.G_SEARCH)
-        searchbox.click()
-        searchbox.clear()
-        searchbox.send_keys(header)
-        searchbox.submit()
-        searchbox.send_keys(Keys.RETURN)
+        search_box = self.driver.find_element_by_id(config.G_SEARCH)
+        search_box.click()
+        search_box.clear()
+        search_box.send_keys(header)
+        search_box.submit()
+        search_box.send_keys(Keys.RETURN)
 
     def next_page_exists(self, tries):
-        attempts = 0
-        while attempts < tries:
+        attempt = 0
+        while attempt < config.MAX_ATTEMPTS_TO_FIND_ELEMENT:
             try:
                 self.driver.find_element(By.ID, config.G_NEXTPAGE)
                 return True
             except Exceptions.NoSuchElementException:
                 logging.warning("No next page! No such element")
-                attempts += 1
+                attempt += 1
             except Exceptions.TimeoutException:
-                attempts += 1
+                attempt += 1
                 logging.warning("No next page! Timeout exception")
         return False
 
@@ -189,8 +191,8 @@ class GWebPage(Webpage):
     def wait_for_page_load(self):
         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID,config.G_RESULTTEXT)))
         new_resultstats = self.driver.find_element_by_id(config.G_RESULTTEXT).text
-        if self.resultstats != new_resultstats:
-            self.resultstats = new_resultstats
+        if self.result_stats != new_resultstats:
+            self.result_stats = new_resultstats
             return True
         return False
 
