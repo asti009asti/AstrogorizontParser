@@ -2,9 +2,10 @@ from selenium import webdriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.options import Options
 import selenium.common.exceptions as Exceptions
+from selenium.webdriver.common.keys import Keys
 import time
 import config
 import stories
@@ -16,6 +17,7 @@ class Webpage:
     def __init__(self, url):
         self.driver = None
         self.url = url
+        self.continue_scan = True
 
     def launch_chrome(self):
         self.chromeoptions = Options()
@@ -30,11 +32,11 @@ class Webpage:
     def wait_for_url_change(self, function_to_execute):
         url_before = self.driver.current_url
         function_to_execute()
-        while not self.did_url_change(url_before, self.driver.current_url):
+        while not self.did_page_change(url_before, self.driver.current_url):
             time.sleep(5)
 
-    def did_url_change(self, url_old, url_new):
-        if url_old == url_new:
+    def did_page_change(self, value_old, value_new):
+        if value_old == value_new:
             return False
         else:
             return True
@@ -50,7 +52,6 @@ class AgWebPage(Webpage):
         self.currentpage = 1
         self.page_switch_flag = 0
         self.days = days
-        self.continue_scan = True
 
     def scan(self):
         headers = []
@@ -125,21 +126,85 @@ class GWebPage(Webpage):
         Webpage.__init__(self, url)
         self.domain = config.G_SEARCHDOMAIN
         self.pages = config.G_SEARCHPAGES
+        self.resultstats = ""
 
-    def search(self, story_header):
+    def scan(self):
+        attempts = 0
+        while attempts < 3:
+            try:
+                domains = self.driver.find_elements_by_xpath(config.G_DOMAINS)
+                count = 0
+                for each in domains:
+                    if self.domain in each.text:
+                        count += 1
+                return count
+            except Exceptions.StaleElementReferenceException:
+                attempts += 1
+
+    def enter_story_in_searchbox(self, header):
         searchbox = self.driver.find_element_by_id(config.G_SEARCH)
         searchbox.click()
         searchbox.clear()
-        searchbox.send_keys(story_header)
+        searchbox.send_keys(header)
+        searchbox.submit()
         searchbox.send_keys(Keys.RETURN)
 
-    def scan(self):
-        domains = self.driver.find_elements_by_xpath(config.G_DOMAINS)
-        count = 0
-        for each in domains:
-            if self.domain in each.text:
-                count += 1
-        return count
+    def next_page_exists(self, tries):
+        attempts = 0
+        while attempts < tries:
+            try:
+                self.driver.find_element(By.ID, config.G_NEXTPAGE)
+                return True
+            except Exceptions.NoSuchElementException:
+                print "No next page! No such element"
+                attempts += 1
+            except Exceptions.TimeoutException:
+                attempts += 1
+                print "No next page! Timeout exception"
+        return False
 
-    def next_page(self):
-        self.driver.find_element_by_xpath(config.G_NEXTPAGE).click()
+    def search(self, story):
+        print "processing story", story.header
+        self.enter_story_in_searchbox(story.header)
+        while not self.wait_for_page_load():
+            time.sleep(1)
+        for page in range(self.pages):
+            print "page", page
+            if page != 0:
+                while not self.wait_for_page_load():
+                    time.sleep(1)
+            story.search_occurences += self.scan()
+            if page != self.pages-1 and self.pages != 1:
+                # omit next page click for last page and if only one page is being inspected for each query
+                if not self.next_page(3):
+                    print "next page does not exist for page", page
+                    break
+            print "clicked next page", page
+
+    def wait_for_page_load(self):
+        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID,config.G_RESULTTEXT)))
+        new_resultstats = self.driver.find_element_by_id(config.G_RESULTTEXT).text
+        if self.resultstats != new_resultstats:
+            self.resultstats = new_resultstats
+            return True
+        return False
+
+    def next_page(self, tries):
+        attempts = 0
+        while attempts < tries:
+            try:
+                next_page_link = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.ID,config.G_NEXTPAGE)))
+                next_page_link = self.driver.find_element(By.ID, config.G_NEXTPAGE)
+                #webdriver.ActionChains(self.driver).move_to_element(next_page_link).click().perform()
+                next_page_link.click()
+                return True
+            except Exception:
+                time.sleep(1)
+                print "Next page link is missing."
+                attempts += 1
+        return False
+
+
+
+
+

@@ -28,22 +28,28 @@ class File:
     def create_file(cls, file):
         fullpath = cls.get_project_folder()+file
         fileref = open(fullpath, "w")
+        fileref.close()
+
+    @classmethod
+    def open_file_for_append(cls, file):
+        fullpath = cls.get_project_folder()+file
+        fileref = open(fullpath,"a")
         return fileref
 
     @classmethod
-    def add_to_file(cls,file):
+    def add_to_file(cls, file):
         if cls.check_file_exists(file):
             pass
 
 
-class ConfigFile(File):
-
-    @classmethod
-    def read_config(self, file):
-        pass
-
-
 class Reporting(File):
 
-    def export_results_to_file(self):
-        pass
+    def __init__(self):
+        File.__init__(self)
+
+    @classmethod
+    def export_results_to_file(cls, file, story):
+        fileref = cls.open_file_for_append(file)
+        fileref.write(story)
+        fileref.write("\n")
+        fileref.close()

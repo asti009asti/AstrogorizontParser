@@ -1,6 +1,7 @@
 import datetime
 import webpage
-
+import config
+from selenium.webdriver.common.keys import Keys
 
 class Iteration(type):
     def __iter__(cls):
@@ -32,13 +33,19 @@ class Story:
             year = int("20"+date[2])
             self.date = datetime.date(year, month, day)
 
-    def csv(self):
-        list =[]
-        list.append(self.header)
+    def csv(self, return_list=True):
+        list = []
+        list.append((self.header).encode('utf-8'))
         list.append(str(self.date.day)+"/"+str(self.date.month)+"/"+str(self.date.year))
-        list.append(self.description)
-        list.append(self.search_occurences)
-        return ",".join(list)
+        list.append((self.description).encode('utf-8'))
+        list.append(str(self.search_occurences))
+        if return_list:
+            return ",".join(list)
+        else:
+            string = ""
+            for each in list:
+                string += each + ";"
+            return string[:-1]
 
     def xml(self):
         xml = ""
@@ -76,19 +83,6 @@ class Story:
         #print "URL:", self.url
         print "Description:", self.description
         print "Search occurences:", self.search_occurences
-
-    def search(self):
-        gwebpg = webpage.GWebPage("http://www.google.com")
-        gwebpg.launch_chrome()
-        gwebpg.open()
-        gwebpg.wait_for_url_change(lambda: gwebpg.search(self.header))
-
-        for page in range(gwebpg.pages):
-            self.search_occurences += gwebpg.scan()
-            if page != gwebpg.pages-1 and gwebpg.pages != 1:
-                # omit next page click for last page and if only one page is being inspected for each query
-                gwebpg.wait_for_url_change(lambda: gwebpg.next_page())
-        gwebpg.close()
 
     def __del__(self):
         pass

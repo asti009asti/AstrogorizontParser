@@ -5,8 +5,10 @@ AG_NEXTPAGES = "//table[14]/tbody/tr/td/span[@class='gorlin']/a[position()=1]"  
 AG_PERIOD = 10  #time period to export stories for
 
 G_SEARCH = "gbqfq"
-G_NEXTPAGE = "//a[@id='pnnext']/span[2]"
+#G_NEXTPAGE = "//a[@id='pnnext']/span[2]"
+G_NEXTPAGE = "pnnext"
 G_DOMAINS = "//cite[@class='_Rm' or @class='_Rm bc']"
+G_RESULTTEXT = "resultStats"
 
 G_SEARCHPAGES = 3
 G_SEARCHDOMAIN = "astrogorizont.com"
