@@ -58,7 +58,7 @@ class AgWebPage(Webpage):
         headers = []
         dates = []
         description = []
-        iterations = 0
+        attempt = 0
         while len(headers) < config.AG_MIN_STORIES_ON_PAGE or \
                         len(dates) < config.AG_MIN_STORIES_ON_PAGE or \
                         len(description) < config.AG_MIN_STORIES_ON_PAGE:
@@ -66,8 +66,8 @@ class AgWebPage(Webpage):
             dates = self.driver.find_elements_by_xpath(config.AG_DATES_XPATH)
             description = self.driver.find_elements_by_xpath(config.AG_DESCIPTION_XPATH)
             time.sleep(1)
-            iterations += 1
-            if iterations == 10:
+            attempt += 1
+            if attempt == config.MAX_ATTEMPTS_TO_FIND_ELEMENT*3:
                 logging.warning("There is something wrong with the page - can't locate elements.")
                 logging.warning("The server might be busy or your internet connection is too slow.")
                 logging.warning("Please try again...")
@@ -75,6 +75,7 @@ class AgWebPage(Webpage):
 
         del headers[0]  # removing first extra header parsed
 
+        # making sure number of headers matches number of dates and descriptions parsed
         if len(headers) != len(dates) or len(headers) != len(description):
             print len(headers)
             print len(dates)
@@ -103,7 +104,7 @@ class AgWebPage(Webpage):
         elif self.page_switch_flag > 0 and self.currentpage == 13:
             self.currentpage = 3
         nextpage_xpath = config.AG_NEXTPAGES[:-2] + str(self.currentpage) + "]"
-        for attempt in range(config.MAX_ATTEMPTS):
+        for attempt in range(config.MAX_ATTEMPTS_TO_FIND_ELEMENT):
             try:
                 next_page_link = self.driver.find_element_by_xpath(nextpage_xpath)
             except Exceptions.NoSuchElementException:
@@ -134,7 +135,7 @@ class GWebPage(Webpage):
 
     def scan(self):
         attempt = 0
-        while attempt < config.MAX_ATTEMPTS:
+        while attempt < config.MAX_ATTEMPTS_TO_FIND_ELEMENT:
             try:
                 domains = self.driver.find_elements_by_xpath(config.G_DOMAINS)
                 count = 0
@@ -195,7 +196,7 @@ class GWebPage(Webpage):
 
     def next_page(self):
         attempt = 0
-        while attempt < config.MAX_ATTEMPTS:
+        while attempt < config.MAX_ATTEMPTS_TO_FIND_ELEMENT:
             try:
                 next_page_link = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.ID,config.G_NEXTPAGE)))
                 next_page_link = self.driver.find_element(By.ID, config.G_NEXTPAGE)
