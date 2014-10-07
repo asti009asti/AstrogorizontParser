@@ -43,8 +43,8 @@ class Story:
             return ",".join(list)
         else:
             string = ""
-            for each in list:
-                string += each + ";"
+            for list_item in list:
+                string += list_item + ";"
             return string[:-1]
 
     def xml(self):
@@ -74,7 +74,7 @@ class Story:
         if cls._instances == []:
             print "No stories exist so far"
         else:
-            [cls.show(each) for each in cls._instances]
+            [cls.show(class_instance) for class_instance in cls._instances]
 
     def show(self):
         print "story id: ", self.id

@@ -29,8 +29,8 @@ gwebpg.launch_chrome()
 gwebpg.open()
 
 logging.info("Start: Starting stories search")
-for each in stories.Story:
-    gwebpg.wait_for_url_change(lambda: gwebpg.search(each))
+for story in stories.Story:
+    gwebpg.wait_for_url_change(lambda: gwebpg.search(story))
 
 gwebpg.close()
 logging.info("End: Stories search complete!")
@@ -44,9 +44,8 @@ else:
     filelib.Reporting.clear_file("report.txt")
     logging.info("Start: Clearing the existing file...")
 
-for each in stories.Story:
-    print each.csv(False)
-    filelib.Reporting.export_results_to_file("report.txt", each.csv(False))
+for story in stories.Story:
+    filelib.Reporting.export_results_to_file("report.txt", story.csv(False))
 logging.info("End: File export complete")
 
 
