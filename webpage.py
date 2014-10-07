@@ -59,7 +59,9 @@ class AgWebPage(Webpage):
         dates = []
         description = []
         iterations = 0
-        while len(headers) < 5 or len(dates) < 5 or len(description) < 5:
+        while len(headers) < config.AG_MIN_STORIES_ON_PAGE or \
+                        len(dates) < config.AG_MIN_STORIES_ON_PAGE or \
+                        len(description) < config.AG_MIN_STORIES_ON_PAGE:
             headers = self.driver.find_elements_by_xpath(config.AG_HEADERS_XPATH)
             dates = self.driver.find_elements_by_xpath(config.AG_DATES_XPATH)
             description = self.driver.find_elements_by_xpath(config.AG_DESCIPTION_XPATH)
@@ -85,6 +87,7 @@ class AgWebPage(Webpage):
         for header, date, description in zip(headers, dates, description):
             datetext = "/".join((date.text.lstrip()).split(" "))
             if self.is_date_valid(datetext):
+                # [:-10] below removed extra word at the end of the description
                 stories.Story(header.text, datetext, description.text[:-10])
             else:
                 self.continue_scan = False
@@ -100,7 +103,7 @@ class AgWebPage(Webpage):
         elif self.page_switch_flag > 0 and self.currentpage == 13:
             self.currentpage = 3
         nextpage_xpath = config.AG_NEXTPAGES[:-2] + str(self.currentpage) + "]"
-        for i in range(4):
+        for attempt in range(config.MAX_ATTEMPTS):
             try:
                 next_page_link = self.driver.find_element_by_xpath(nextpage_xpath)
             except Exceptions.NoSuchElementException:
@@ -130,8 +133,8 @@ class GWebPage(Webpage):
         self.resultstats = ""
 
     def scan(self):
-        attempts = 0
-        while attempts < 3:
+        attempt = 0
+        while attempt < config.MAX_ATTEMPTS:
             try:
                 domains = self.driver.find_elements_by_xpath(config.G_DOMAINS)
                 count = 0
@@ -140,7 +143,7 @@ class GWebPage(Webpage):
                         count += 1
                 return count
             except Exceptions.StaleElementReferenceException:
-                attempts += 1
+                attempt += 1
 
     def enter_story_in_searchbox(self, header):
         searchbox = self.driver.find_element_by_id(config.G_SEARCH)
@@ -177,7 +180,7 @@ class GWebPage(Webpage):
             story.search_occurences += self.scan()
             if page != self.pages-1 and self.pages != 1:
                 # omit next page click for last page and if only one page is being inspected for each query
-                if not self.next_page(3):
+                if not self.next_page():
                     logging.debug("next page link does not exist")
                     break
             logging.debug("Next page clicked.")
@@ -190,9 +193,9 @@ class GWebPage(Webpage):
             return True
         return False
 
-    def next_page(self, tries):
-        attempts = 0
-        while attempts < tries:
+    def next_page(self):
+        attempt = 0
+        while attempt < config.MAX_ATTEMPTS:
             try:
                 next_page_link = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.ID,config.G_NEXTPAGE)))
                 next_page_link = self.driver.find_element(By.ID, config.G_NEXTPAGE)
@@ -202,7 +205,7 @@ class GWebPage(Webpage):
             except Exception:
                 time.sleep(1)
                 logging.warning("Next page link is missing.")
-                attempts += 1
+                attempt += 1
         return False
 
 
