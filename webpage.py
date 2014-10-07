@@ -11,6 +11,7 @@ import config
 import stories
 import sys
 import datetime
+import logging
 
 class Webpage:
 
@@ -156,20 +157,20 @@ class GWebPage(Webpage):
                 self.driver.find_element(By.ID, config.G_NEXTPAGE)
                 return True
             except Exceptions.NoSuchElementException:
-                print "No next page! No such element"
+                logging.warning("No next page! No such element")
                 attempts += 1
             except Exceptions.TimeoutException:
                 attempts += 1
-                print "No next page! Timeout exception"
+                logging.warning("No next page! Timeout exception")
         return False
 
     def search(self, story):
-        print "processing story", story.header
+        logging.info("Searching story")
         self.enter_story_in_searchbox(story.header)
         while not self.wait_for_page_load():
             time.sleep(1)
         for page in range(self.pages):
-            print "page", page
+            logging.debug("Next page")
             if page != 0:
                 while not self.wait_for_page_load():
                     time.sleep(1)
@@ -177,9 +178,9 @@ class GWebPage(Webpage):
             if page != self.pages-1 and self.pages != 1:
                 # omit next page click for last page and if only one page is being inspected for each query
                 if not self.next_page(3):
-                    print "next page does not exist for page", page
+                    logging.debug("next page link does not exist")
                     break
-            print "clicked next page", page
+            logging.debug("Next page clicked.")
 
     def wait_for_page_load(self):
         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID,config.G_RESULTTEXT)))
@@ -200,7 +201,7 @@ class GWebPage(Webpage):
                 return True
             except Exception:
                 time.sleep(1)
-                print "Next page link is missing."
+                logging.warning("Next page link is missing.")
                 attempts += 1
         return False
 
