@@ -7,7 +7,7 @@ AG_MIN_STORIES_ON_PAGE = 5  # minimal expected number of stories to appear on as
 
 
 G_SEARCH = "gbqfq"  # google's searchbox
-#G_NEXTPAGE = "//a[@id='pnnext']/span[2]"
+G_NEXTPAGE_XPATH = "//a[@id='pnnext']/span[2]"
 G_NEXTPAGE = "pnnext"  # google's next page link
 G_DOMAINS = "//cite[@class='_Rm' or @class='_Rm bc']"  # google results' domains
 G_RESULTTEXT = "resultStats"  # google resultStat field (probably loads last)
