@@ -1,14 +1,7 @@
 import stories
 import webpage
-import config
 import filelib
 import logging
-from selenium import webdriver
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.chrome.options import Options
-import selenium.common.exceptions as Exceptions
-import time
 
 ### starting log file configuration
 logging.basicConfig(filename='execution.log', level=logging.INFO)
