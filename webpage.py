@@ -66,9 +66,9 @@ class AgWebPage(Webpage):
             time.sleep(1)
             iterations += 1
             if iterations == 10:
-                print "There is something wrong with the page - can't locate elements."
-                print "The server might be busy or your internet connection is too slow."
-                print "Please try again..."
+                logging.warning("There is something wrong with the page - can't locate elements.")
+                logging.warning("The server might be busy or your internet connection is too slow.")
+                logging.warning("Please try again...")
                 sys.exit(1)
 
         del headers[0]  # removing first extra header parsed
@@ -77,9 +77,9 @@ class AgWebPage(Webpage):
             print len(headers)
             print len(dates)
             print len(description)
-            print "There is something wrong with the page - could not locate all elements on the page."
-            print "The server might be busy or your internet connection is too slow."
-            print "Please try again..."
+            logging.warning("There is something wrong with the page - could not locate all elements on the page.")
+            logging.warning("The server might be busy or your internet connection is too slow.")
+            logging.warning("Please try again...")
             sys.exit(1)
 
         for header, date, description in zip(headers, dates, description):
@@ -99,7 +99,7 @@ class AgWebPage(Webpage):
             self.page_switch_flag = 1
         elif self.page_switch_flag > 0 and self.currentpage == 13:
             self.currentpage = 3
-        nextpage_xpath = config.AG_NEXTPAGES[:-2]+ str(self.currentpage) + "]"
+        nextpage_xpath = config.AG_NEXTPAGES[:-2] + str(self.currentpage) + "]"
         for i in range(4):
             try:
                 next_page_link = self.driver.find_element_by_xpath(nextpage_xpath)
