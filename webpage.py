@@ -15,10 +15,15 @@ import logging
 
 class Webpage:
 
-    def __init__(self, url):
+    def __init__(self, url, browser='chrome'):
         self.driver = None
         self.url = url
         self.continue_scan = True
+        if browser == 'chrome':
+            self.launch_chrome()
+        else:
+            self.launch_firefox()
+        self.driver.get(self.url)
 
     def launch_chrome(self):
         self.chrome_options = Options()
@@ -27,8 +32,14 @@ class Webpage:
         self.driver = webdriver.Chrome(chrome_options=self.chrome_options)
         self.driver.maximize_window()
 
-    def open(self):
-        self.driver.get(self.url)
+    def launch_firefox(self):
+        self.driver = webdriver.Firefox()
+        self.driver.maximize_window()
+
+    @classmethod
+    def open(cls, url, browser='chrome'):
+        wbpage = Webpage(url, browser)
+        return wbpage
 
     def wait_for_url_change(self, function_to_execute):
         url_before = self.driver.current_url
@@ -48,11 +59,16 @@ class Webpage:
 
 class AgWebPage(Webpage):
 
-    def __init__(self, url, days):
-        Webpage.__init__(self, url)
+    def __init__(self, url, browser='chrome'):
+        Webpage.__init__(self, url, browser)
         self.current_page = 1
         self.page_switch_flag = 0
-        self.days = days
+        self.days = config.AG_CHECK_PERIOD
+
+    @classmethod
+    def open(cls, url, browser='chrome'):
+        webpg = AgWebPage(url, browser)
+        return webpg
 
     def scan(self):
         headers = []
@@ -127,13 +143,18 @@ class AgWebPage(Webpage):
 
 class GWebPage(Webpage):
 
-    def __init__(self, url):
-        Webpage.__init__(self, url)
+    def __init__(self, url, browser='chrome'):
+        Webpage.__init__(self, url, browser)
         self.domain = config.G_SEARCHDOMAIN
         self.pages = config.G_SEARCHPAGES
 
         # a variable to store google's resultStats field text
         self.result_stats = ""
+
+    @classmethod
+    def open(cls, url, browser='chrome'):
+        webpg = GWebPage(url, browser)
+        return webpg
 
     def scan(self):
         attempt = 0

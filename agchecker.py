@@ -9,9 +9,7 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%d/%m/%y %H:%M', 
 
 ### Scan Astrogorizon.com stories
 logging.info("1. Launching Astrogorizont.com")
-webpg = webpage.AgWebPage("http://www.astrogorizont.com/content/ch-2", 30)
-webpg.launch_chrome()
-webpg.open()
+webpg = webpage.AgWebPage.open("http://www.astrogorizont.com/content/ch-2", 'firefox')
 
 logging.info("Start: Stories scan")
 while webpg.continue_scan:
@@ -24,9 +22,7 @@ logging.info("End: Stories scan complete!")
 
 ### Search stories in Google.com
 logging.info("3. Launching google.com")
-gwebpg = webpage.GWebPage("http://www.google.com")
-gwebpg.launch_chrome()
-gwebpg.open()
+gwebpg = webpage.GWebPage.open("http://www.google.com", 'firefox')
 
 logging.info("Start: Starting stories search")
 for story in stories.Story:
