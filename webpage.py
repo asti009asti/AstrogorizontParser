@@ -221,7 +221,8 @@ class GWebPage(Webpage):
         attempt = 0
         while attempt < config.MAX_ATTEMPTS_TO_FIND_ELEMENT:
             try:
-                next_page_link = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.ID,config.G_NEXTPAGE)))
+                next_page_link = WebDriverWait(self.driver, 10).\
+                    until(EC.element_to_be_clickable((By.ID, config.G_NEXTPAGE)))
                 next_page_link = self.driver.find_element(By.ID, config.G_NEXTPAGE)
                 #webdriver.ActionChains(self.driver).move_to_element(next_page_link).click().perform()
                 next_page_link.click()
